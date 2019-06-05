@@ -1,0 +1,12 @@
+
+body {
+    margin: 0;
+}
+
+#c {
+    display: block;
+    width: 600px;
+    height: 400px;
+    margin: 100px auto 0;
+    background-color: black;
+}

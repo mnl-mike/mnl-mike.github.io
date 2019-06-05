@@ -1,0 +1,22 @@
+[
+    {
+        "name": "ship",
+        "path": "assets/ship.png",
+        "type": "image"
+    },
+    {
+        "name": "enemy",
+        "path": "assets/enemy.png",
+        "type": "image"
+    },
+    {
+        "name": "shoot",
+        "path": "assets/shoot.wav",
+        "type": "audio"
+    },
+    {
+        "name": "explosion",
+        "path": "assets/explosion.wav",
+        "type": "audio"
+    }
+]
