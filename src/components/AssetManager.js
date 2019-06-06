@@ -27,10 +27,10 @@ export default class AssetManager {
     add(fileObj, cb) {
 
         // loaded file event listener
-        let onFileLoaded = () => {
+        let onFileLoaded = (file) => {
 
             // add to assets obj
-            this.assets[fileObj.name] = fileObj.path
+            this.assets[fileObj.name] = file
 
             // next
             cb()
@@ -42,14 +42,14 @@ export default class AssetManager {
             case 'image':
 
                 let img = new Image()
-                img.onload = onFileLoaded
+                img.onload = onFileLoaded(img)
                 img.src = fileObj.path
 
             break
             case 'audio':
                 
                 let audio = new Audio()
-                audio.addEventListener('canplaythrough', onFileLoaded)
+                audio.addEventListener('canplaythrough', onFileLoaded(audio))
                 audio.src = fileObj.path
 
             break
