@@ -1,10 +1,4 @@
 
-lets serve our files using http-server
+Simple HTML5 rendering engine
 
-install http-server
-`$ npm install -g http-server`
-
-then use
-`$ http-server . -a localhost`
-
-then access the demo [here](http://localhost:8080/demo/)
+Demo [here](https://mnl-mike.github.io/)
