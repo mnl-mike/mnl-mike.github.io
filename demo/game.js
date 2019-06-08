@@ -5,27 +5,27 @@ import SimpleEngine from '../src/index.js'
 const gameFiles = [
     {
         "name": "ship",
-        "path": "assets/ship.png",
+        "path": "demo/assets/ship.png",
         "type": "image"
     },
     {
         "name": "invader",
-        "path": "assets/invader.png",
+        "path": "demo/assets/invader.png",
         "type": "image"
     },
     {
         "name": "laser",
-        "path": "assets/laser.png",
+        "path": "demo/assets/laser.png",
         "type": "image"
     },
     {
         "name": "shoot",
-        "path": "assets/shoot.wav",
+        "path": "demo/assets/shoot.wav",
         "type": "audio"
     },
     {
         "name": "explosion",
-        "path": "assets/explosion.wav",
+        "path": "demo/assets/explosion.wav",
         "type": "audio"
     }
 ];
