@@ -12,7 +12,6 @@ export default class RenderController {
         this.loopers = []
         this.loopStarted = false
 
-
     }
 
     addLooper(fn) {
@@ -64,9 +63,24 @@ export default class RenderController {
 
     }
 
-    render(obj) {
+    render(obj, source) {
 
-        this.ctx.drawImage(obj.asset, obj.x, obj.y, obj.width, obj.height)
+        // clone the obj, so it would not be mutable
+        let clone = Object.assign({}, obj)
+
+        // use source as origin of props
+        if (source) {
+            
+            Object.keys(source).forEach(key => {
+
+                if ( typeof clone[key] === 'number' ) clone[key] = ( clone[key] || 0 ) + source[key]
+
+            })
+
+        }
+
+        this.ctx.globalAlpha = clone.opacity || 1
+        this.ctx.drawImage(clone.asset, clone.x, clone.y, clone.width, clone.height)
 
     }
     
@@ -148,6 +162,26 @@ export default class RenderController {
                 })
 
             }
+
+        }
+
+    }
+
+    graph(obj) {
+
+        let self = this
+        recursiveRender(obj)
+
+        function recursiveRender(origin, source) {
+
+            self.render(origin, source)
+
+            if ( origin.children && origin.children.length ) {
+
+                obj.children.forEach(child => { recursiveRender(child, origin) })
+
+            }
+
 
         }
 

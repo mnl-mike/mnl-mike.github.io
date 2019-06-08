@@ -74,45 +74,59 @@ class Game {
         // create invaders 
         for ( let i = 0; i < 4; i++ ) {
             
-            let invader = new Invader( 40 + ( i * 60 ) );
+            let invader = new Invader( 40 + ( i * 60 ), 100 );
 
             this.invaders.push(invader)
 
             // add sideways movement
             invaderSidewaysMovement(invader)
-            
-            function invaderSidewaysMovement(obj, direction = 'right') {
-
-                Engine.Renderer.tween(obj, {
-                    x: obj.x + ( direction === 'left' ? -300 : 300 )
-                }, 2000, () => {
-
-                    invaderSidewaysMovement(obj, direction === 'left' ? 'right' : 'left')
-
-                })
-
-            }
 
         }
 
         // create bonus invader
-        let invader = new Invader(-20, 20, 20, 20, true)
+        let invader = new Invader(-20, 75, 20, 20)
 
         this.invaders.push(invader)
 
-        // add bonus invader movement
-        Engine.Renderer.keyframe(invader, [
-            {
-                props: { x: stage.width }, 
-                duration: 3000
-            }, {
-                props: { y: 80 },
-                duration: 1000
-            }, {
-                props: { x: -20 }, 
-                duration: 3000
-            }
-        ])
+        // add bonus invader movement using keyframe
+        Engine.Renderer.keyframe(invader, [{
+            props: { x: stage.width }, 
+            duration: 3000
+        }, {
+            props: { y: 140 },
+            duration: 1000
+        }, {
+            props: { x: -20 }, 
+            duration: 3000
+        }])
+
+        // create boss like invaders! this time using children as scene graph
+        for (let i = 0; i < 2; i++ ) {
+
+            let invader = new Invader(400 + (i * 100), 20);
+            invader.children.push(new Invader(-12, -12, -10, -10, -0.7))
+            invader.children.push(new Invader(24, -12, -10, -10, -0.7))
+            invader.children.push(new Invader(24, 24, -10, -10, -0.7))
+            invader.children.push(new Invader(-12, 24, -10, -10, -0.7))
+
+            this.invaders.push(invader)
+
+            // add sideways movement
+            invaderSidewaysMovement(invader, 'left')
+
+        }
+
+        function invaderSidewaysMovement(obj, direction = 'right') {
+
+            Engine.Renderer.tween(obj, {
+                x: obj.x + (direction === 'left' ? -300 : 300)
+            }, 2000, () => {
+
+                invaderSidewaysMovement(obj, direction === 'left' ? 'right' : 'left')
+
+            })
+
+        }
 
     }
 
@@ -141,7 +155,9 @@ class Game {
             // render invaders
             this.invaders.forEach(invader => {
 
-                Renderer.render(invader)
+                // check if have children, use graph
+                if ( invader.children.length ) Renderer.graph(invader)
+                else Renderer.render(invader)
 
             })
 
@@ -164,14 +180,10 @@ class Game {
             // check hit
             for ( let i = this.invaders.length - 1; i >= 0; i-- ) {
 
-                // if ((
-                //     this.laser.x - this.laser.width >= this.invaders[i].x && 
-                //     this.laser.x <= this.invaders[i].x + this.invaders[i].width &&
-                //     this.laser.y >= this.invaders[i].y && 
-                //     this.laser.y + this.laser.height <= this.invaders[i].y + this.invaders[i].height
-                // )) {
-
                 if ( this.isObjCollide(this.laser, this.invaders[i]) ) {
+
+                    // remove laser
+                    this.laser = null
 
                     // remove invader
                     this.invaders.splice(i, 1)
@@ -184,7 +196,7 @@ class Game {
             }
             
             // destroy laser if out of bounds
-            if ( this.laser.y + this.laser.height <= 0 ) {
+            if ( this.laser && this.laser.y + this.laser.height <= 0 ) {
 
                 this.laser = null
 
@@ -225,12 +237,18 @@ class Game {
 
     isObjCollide(obj1, obj2) {
 
-        return !(
-            ((obj1.y + obj1.height) < (obj2.y)) ||
-            (obj1.y > (obj2.y + obj2.height)) ||
-            ((obj1.x + obj1.width) < obj2.x) ||
-            (obj1.x > (obj2.x + obj2.width))
-        )
+        if ( obj1 && obj1 ) {
+
+            return !(
+                ( obj1.y + obj1.height < obj2.y ) ||
+                ( obj1.y > obj2.y + obj2.height ) ||
+                ( obj1.x + obj1.width < obj2.x ) ||
+                ( obj1.x > obj2.x + obj2.width )
+            )
+        
+        }
+
+        return false
 
     }
 
@@ -253,14 +271,15 @@ class Ship {
 
 class Invader {
 
-    constructor(x, y = 40, width = 40, height = 40, debug = false) {
+    constructor(x, y = 40, width = 40, height = 40, opacity = 1) {
 
         this.asset = Engine.Assets.get('invader')
         this.width = width
         this.height = height
         this.x = x
         this.y = y
-        this.debug = debug
+        this.opacity = opacity
+        this.children = []
 
     }
 
