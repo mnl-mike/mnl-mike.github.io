@@ -5,12 +5,13 @@ export default class RenderController {
 
         this.stage = stage
         this.current = + new Date()
-        this.fps = 60
-        this.delta = 1 / this.fps
+        this.fps = 80
+        this.delta = 1000 / this.fps
         this.ctx = stage.getContext("2d")
         this.loop = this.loop.bind(this)
         this.loopers = []
         this.loopStarted = false
+
 
     }
 
@@ -22,7 +23,6 @@ export default class RenderController {
         if ( !this.loopStarted ) this.loop()
 
         return looper
-
 
     }
 
@@ -40,12 +40,21 @@ export default class RenderController {
 
             })
 
+            for ( let i = this.loopers.length - 1; i >= 0; i-- ) {
+
+                let looper = this.loopers[i]
+                
+                // remove looper if disabled, else run fn
+                if ( looper.disabled ) this.loopers.splice(i, 1)
+                else looper.fn(this.delta) 
+            }
+
             // re set current time
             this.current = now
 
-            requestAnimationFrame(() => { this.loop() })
-
         }
+
+        requestAnimationFrame(() => { this.loop() })
 
     }
 
@@ -108,11 +117,37 @@ export default class RenderController {
                 if ( timeDiff >= duration ) {
 
                     looper.disabled = true
-                    cb()
+                    if ( cb ) cb()
 
                 }
 
             })
+
+        }
+
+    }
+
+    keyframe(obj, frames = [], cb) {
+
+        // check if have frames
+        if ( frames.length ) {
+
+            var self = this
+            recursiveTween()
+
+            function recursiveTween(index = 0) {
+                
+                let frame = frames[index]
+
+                // lets utilise tween
+                self.tween(obj, frame.props, frame.duration, () => {
+                    
+                    if ( index < frames.length - 1 ) recursiveTween(index + 1)
+                    else if (cb) cb()
+
+                })
+
+            }
 
         }
 

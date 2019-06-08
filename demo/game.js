@@ -95,6 +95,25 @@ class Game {
 
         }
 
+        // create bonus invader
+        let invader = new Invader(-20, 20, 20, 20, true)
+
+        this.invaders.push(invader)
+
+        // add bonus invader movement
+        Engine.Renderer.keyframe(invader, [
+            {
+                props: { x: stage.width }, 
+                duration: 3000
+            }, {
+                props: { y: 80 },
+                duration: 1000
+            }, {
+                props: { x: -20 }, 
+                duration: 3000
+            }
+        ])
+
     }
 
     initEventListeners() {
@@ -140,17 +159,19 @@ class Game {
         // update laser
         if ( this.laser ) {
 
-            this.laser.y -= delta * 1000
+            this.laser.y -= delta
 
             // check hit
-            for ( let i = this.invaders.length - 1; i >= 0; i--) {
+            for ( let i = this.invaders.length - 1; i >= 0; i-- ) {
 
-                if ((
-                    this.laser.x - this.laser.width >= this.invaders[i].x && 
-                    this.laser.x <= this.invaders[i].x + this.invaders[i].width &&
-                    this.laser.y >= this.invaders[i].y && 
-                    this.laser.y + this.laser.height <= this.invaders[i].y + this.invaders[i].height
-                )) {
+                // if ((
+                //     this.laser.x - this.laser.width >= this.invaders[i].x && 
+                //     this.laser.x <= this.invaders[i].x + this.invaders[i].width &&
+                //     this.laser.y >= this.invaders[i].y && 
+                //     this.laser.y + this.laser.height <= this.invaders[i].y + this.invaders[i].height
+                // )) {
+
+                if ( this.isObjCollide(this.laser, this.invaders[i]) ) {
 
                     // remove invader
                     this.invaders.splice(i, 1)
@@ -172,8 +193,8 @@ class Game {
         }
 
         // update ship if moving
-        if ( this.ship.movingLeft && !this.isObjOutOfBounds(this.ship, 'left') ) this.ship.x -= delta * 500
-        if ( this.ship.movingRight && !this.isObjOutOfBounds(this.ship, 'right') ) this.ship.x += delta * 500
+        if ( this.ship.movingLeft && !this.isObjOutOfBounds(this.ship, 'left') ) this.ship.x -= delta / 2
+        if ( this.ship.movingRight && !this.isObjOutOfBounds(this.ship, 'right') ) this.ship.x += delta / 2
 
     }
 
@@ -202,6 +223,17 @@ class Game {
 
     }
 
+    isObjCollide(obj1, obj2) {
+
+        return !(
+            ((obj1.y + obj1.height) < (obj2.y)) ||
+            (obj1.y > (obj2.y + obj2.height)) ||
+            ((obj1.x + obj1.width) < obj2.x) ||
+            (obj1.x > (obj2.x + obj2.width))
+        )
+
+    }
+
 }
 
 class Ship {
@@ -221,13 +253,14 @@ class Ship {
 
 class Invader {
 
-    constructor(x) {
+    constructor(x, y = 40, width = 40, height = 40, debug = false) {
 
         this.asset = Engine.Assets.get('invader')
-        this.width = 40
-        this.height = 40
+        this.width = width
+        this.height = height
         this.x = x
-        this.y = 40
+        this.y = y
+        this.debug = debug
 
     }
 
