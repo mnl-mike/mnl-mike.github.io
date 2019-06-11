@@ -175,7 +175,7 @@ class Game {
         // update laser
         if ( this.laser ) {
 
-            this.laser.y -= delta
+            this.laser.y -= delta * 2
 
             // check hit
             for ( let i = this.invaders.length - 1; i >= 0; i-- ) {
