@@ -33,12 +33,6 @@ export default class RenderController {
         if ( now - this.current >= this.delta ) {
 
             // call all loopers
-            this.loopers.forEach(looper => { 
-                
-                if ( !looper.disabled ) looper.fn(this.delta) 
-
-            })
-
             for ( let i = this.loopers.length - 1; i >= 0; i-- ) {
 
                 let looper = this.loopers[i]
